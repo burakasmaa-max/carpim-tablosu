@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Seviyeli Çarpma Oyunu</title>
+    <title>Çarpma Oyunu</title>
+    
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Çarpma Oyunu">
+
     <style>
         * {
             margin: 0;
@@ -17,24 +26,22 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center; /* Dikeyde tam ortalar */
             min-height: 100vh;
-            /* Mobilde içeriğin taşmaması için padding azaltıldı */
             padding: 10px;
             touch-action: manipulation;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
-        /* 1. ADIM: Tüm ana kapsayıcılara esnek genişlik verildi */
         #header, #stats-container, #game-container, #level-selector {
             width: 100%;
-            max-width: 500px; /* Geniş ekranlarda çok yayılmaması için */
+            max-width: 500px;
         }
 
         #header {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             padding: 10px;
-            border-radius: 15px;
+            border-radius: 20px;
             margin-bottom: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             text-align: center;
@@ -42,150 +49,144 @@
 
         #header h1 {
             color: white;
-            font-size: 1.5rem; /* Piksel yerine rem kullanıldı */
+            font-size: 1.6rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        /* 2. ADIM: Oyun alanını ekran yüksekliğine sığdırmak için ölçeklendirme */
         #game-container {
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            padding: 15px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            padding: 20px 15px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             text-align: center;
-            border: 4px solid #fff;
+            border: 5px solid #fff;
             position: relative;
-            /* Küçük ekranlarda içeriği daraltır */
-            margin-bottom: 10px;
+            min-height: 55vh; /* Ekranın %55'ini kaplar */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        #level-indicator {
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: bold;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 8px;
+            border-radius: 15px;
+            margin-bottom: 5px;
         }
 
         #question {
-            font-size: 3rem; /* Mobilde daha uyumlu boyut */
+            font-size: 4.5rem;
             font-weight: bold;
             color: #2d3436;
-            margin: 10px 0;
             background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
             padding: 15px;
-            border-radius: 15px;
-            border: 3px solid #fff;
-            animation: pulse 2s infinite;
+            border-radius: 20px;
+            border: 4px solid #fff;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
         }
 
-        /* 3. ADIM: Seçeneklerin taşmasını önleme */
         .options-container {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
         }
 
         .option {
             flex: 1;
-            padding: 10px 5px;
-            border: 3px solid #fff;
-            border-radius: 15px;
+            padding: 15px 5px;
+            border: 4px solid #fff;
+            border-radius: 20px;
             background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
         }
 
         .icon { 
-            font-size: 40px; /* Meyve ikonları küçültüldü */
+            font-size: 50px; 
             display: block; 
             margin-bottom: 5px;
         }
 
-        .count { font-size: 24px; }
+        .count { font-size: 30px; font-weight: bold; color: #2d3436; }
 
-        /* 4. ADIM: Alt butonları daha kompakt hale getirme */
         #level-selector {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 6px;
-            padding-bottom: 20px;
+            padding: 10px 0;
         }
 
         .level-btn {
-            padding: 8px 12px;
-            font-size: 16px;
-            border-radius: 10px;
-            min-width: 45px;
-        }
-
-        /* EKSTRA: Çok küçük ekranlı telefonlar için mikro ayar */
-        @media (max-height: 600px) {
-            #header { display: none; } /* Çok dar ekranlarda başlığı gizle */
-            #question { font-size: 2.5rem; padding: 10px; }
-            .icon { font-size: 30px; }
-        }
-
-        /* Mevcut animasyonlar ve diğer stiller korunmuştur... */
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        .stat-box {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 16px;
-            text-align: center;
-            border: 2px solid #fff;
+            padding: 10px;
+            font-size: 1rem;
             font-weight: bold;
+            border: 2px solid #fff;
+            border-radius: 12px;
+            background: #fff;
+            color: #764ba2;
+            min-width: 45px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .level-btn.active {
+            background: #f5576c;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        #feedback { height: 50px; font-size: 45px; }
+
+        .stat-box {
+            background: #fff;
+            padding: 5px 15px;
+            border-radius: 10px;
+            font-size: 14px;
             display: none;
+            margin-bottom: 8px;
+            border: 2px solid #f093fb;
         }
         .stat-box.active { display: block; }
-        #level-indicator {
-            font-size: 18px;
-            color: #fff;
-            font-weight: bold;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            padding: 8px;
-            border-radius: 12px;
-        }
-        #feedback { height: 50px; font-size: 40px; margin-top: 5px; }
-        .correct { background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%) !important; }
-        .wrong { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%) !important; }
-        .stars { position: absolute; top: -10px; right: -10px; font-size: 30px; }
-        #bravo-notification {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            padding: 20px; border-radius: 20px; font-size: 24px; text-align: center;
-            color: white; z-index: 1000; border: 4px solid #fff; animation: bravoShow 2s ease-in-out;
-        }
-        @keyframes bravoShow {
-            0% { transform: translate(-50%, -50%) scale(0); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
-            100% { transform: translate(-50%, -50%) scale(0); }
+        .stars { position: absolute; top: -15px; right: -15px; font-size: 35px; }
+
+        /* Küçük ekran optimizasyonu */
+        @media (max-height: 650px) {
+            #question { font-size: 3.5rem; }
+            .icon { font-size: 40px; }
+            #header h1 { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
+
     <div id="header">
         <h1>🎮 Çarpma Oyunu 🎮</h1>
-        <p>Doğru cevabı seç ve öğren!</p>
     </div>
+
     <div id="stats-container"></div>
+
     <div id="game-container">
         <span class="stars">⭐</span>
-        <div id="level-indicator">Şu anki Seviye: 2'ler</div>
-        <div id="question">2 x 5</div>
+        <div id="level-indicator">Yükleniyor...</div>
+        <div id="question">? x ?</div>
         <div class="options-container">
             <div id="left-option" class="option" onclick="checkAnswer('left')">
                 <span id="left-icon" class="icon">🍎</span>
-                <span id="left-count" class="count">10</span>
+                <span id="left-count" class="count">?</span>
             </div>
             <div id="right-option" class="option" onclick="checkAnswer('right')">
-                <span id="right-icon" class="icon">🍌</span>
-                <span id="right-count" class="count">12</span>
+                <span id="right-icon" class="icon">🍎</span>
+                <span id="right-count" class="count">?</span>
             </div>
         </div>
         <div id="feedback"></div>
     </div>
+
     <div id="level-selector"></div>
 
     <script>
-        // ... (Script kodlarının tamamı orijinal haliyle buraya gelecek)
         let currentLevel = 2;
         let correctAnswer;
         let consecutiveCorrect = 0;
@@ -212,29 +213,6 @@
             oscillator.start(audioContext.currentTime); oscillator.stop(audioContext.currentTime + 0.5);
         }
 
-        function playBravoSound() {
-            const notes = [523.25, 659.25, 783.99, 1046.50];
-            notes.forEach((freq, index) => {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                oscillator.connect(gainNode); gainNode.connect(audioContext.destination);
-                oscillator.frequency.value = freq; oscillator.type = 'triangle';
-                const startTime = audioContext.currentTime + (index * 0.2);
-                gainNode.gain.setValueAtTime(0.4, startTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
-                oscillator.start(startTime); oscillator.stop(startTime + 0.2);
-            });
-        }
-
-        function showBravoNotification() {
-            const notification = document.createElement('div');
-            notification.id = 'bravo-notification';
-            notification.innerHTML = '🎉 BRAVO! 🎉<br>10 Doğru!';
-            document.body.appendChild(notification);
-            playBravoSound();
-            setTimeout(() => { notification.remove(); }, 2000);
-        }
-
         const stats = {};
         const levels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'karışık'];
         const questionStats = {};
@@ -249,104 +227,76 @@
         function initLevelButtons() {
             const selector = document.getElementById('level-selector');
             const statsContainer = document.getElementById('stats-container');
-            for (let i = 1; i <= 10; i++) {
+            levels.forEach(level => {
                 const btn = document.createElement('button');
-                btn.className = `level-btn ${i === currentLevel ? 'active' : ''}`;
-                btn.id = `btn-${i}`; btn.innerText = i;
-                btn.onclick = () => changeLevel(i);
+                btn.className = `level-btn ${level === currentLevel ? 'active' : ''}`;
+                btn.id = `btn-${level}`;
+                btn.innerText = level === 'karışık' ? '🎲' : level;
+                btn.onclick = () => changeLevel(level);
                 selector.appendChild(btn);
+
                 const sBox = document.createElement('div');
-                sBox.className = 'stat-box'; sBox.id = `stat-${i}`;
-                sBox.innerHTML = `<strong>${i}'ler</strong>✅: 0 | ❌: 0`;
+                sBox.className = 'stat-box'; sBox.id = `stat-${level}`;
+                sBox.innerHTML = `✅: 0 | ❌: 0`;
                 statsContainer.appendChild(sBox);
-            }
-            const mixBtn = document.createElement('button');
-            mixBtn.className = 'level-btn special';
-            mixBtn.id = 'btn-karışık'; mixBtn.innerText = '🎲 Karışık';
-            mixBtn.onclick = () => changeLevel('karışık');
-            selector.appendChild(mixBtn);
-            const mixBox = document.createElement('div');
-            mixBox.className = 'stat-box'; mixBox.id = 'stat-karışık';
-            mixBox.innerHTML = `<strong>🎲 Karışık</strong>✅: 0 | ❌: 0`;
-            statsContainer.appendChild(mixBox);
+            });
         }
 
         function updateStatsDisplay() {
             levels.forEach(level => document.getElementById(`stat-${level}`).classList.remove('active'));
             const currentBox = document.getElementById(`stat-${currentLevel}`);
             currentBox.classList.add('active');
-            const label = currentLevel === 'karışık' ? '🎲 Karışık' : `${currentLevel}'ler`;
-            currentBox.innerHTML = `<strong>${label}</strong>✅: ${stats[currentLevel].correct} | ❌: ${stats[currentLevel].wrong}`;
+            currentBox.innerHTML = `<b>${currentLevel === 'karışık' ? 'Karışık' : currentLevel + 'ler'}</b> -> ✅: ${stats[currentLevel].correct} | ❌: ${stats[currentLevel].wrong}`;
         }
 
         function changeLevel(level) {
-            currentLevel = level; consecutiveCorrect = 0;
+            currentLevel = level;
             document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${level}`).classList.add('active');
-            const levelText = level === 'karışık' ? '🎲 Karışık' : `${level}'ler`;
-            document.getElementById('level-indicator').innerText = `Şu anki Seviye: ${levelText}`;
+            document.getElementById('level-indicator').innerText = `Seviye: ${level === 'karışık' ? 'Karışık' : level + "'ler"}`;
             updateStatsDisplay(); generateQuestion();
         }
 
         function generateQuestion() {
             document.getElementById('feedback').innerHTML = '';
-            document.getElementById('left-option').className = 'option';
-            document.getElementById('right-option').className = 'option';
             let num1, num2;
             if (currentLevel === 'karışık') {
                 num1 = Math.floor(Math.random() * 10) + 1;
                 num2 = Math.floor(Math.random() * 10) + 1;
             } else {
                 num1 = currentLevel;
-                const availableNumbers = [];
-                for (let i = 1; i <= 10; i++) { if (questionStats[currentLevel][i] < 5) availableNumbers.push(i); }
-                if (availableNumbers.length === 0) {
-                    for (let i = 1; i <= 10; i++) { questionStats[currentLevel][i] = 0; availableNumbers.push(i); }
-                }
-                num2 = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+                num2 = Math.floor(Math.random() * 10) + 1;
             }
-            window.currentNum2 = num2;
             correctAnswer = num1 * num2;
-            let wrongAnswer;
-            do {
-                const offset = (Math.random() > 0.5 ? 1 : -1) * (currentLevel === 'karışık' ? Math.floor(Math.random() * 5) + 1 : currentLevel);
-                wrongAnswer = correctAnswer + offset;
-                if (wrongAnswer < 1) wrongAnswer = correctAnswer + Math.abs(offset);
-            } while (wrongAnswer === correctAnswer);
+            let wrongAnswer = correctAnswer + (Math.random() > 0.5 ? num1 : -num1);
+            if (wrongAnswer <= 0) wrongAnswer = correctAnswer + num1;
+
             document.getElementById('question').innerText = `${num1} × ${num2}`;
             const isLeftCorrect = Math.random() > 0.5;
             document.getElementById('left-count').innerText = isLeftCorrect ? correctAnswer : wrongAnswer;
             document.getElementById('right-count').innerText = isLeftCorrect ? wrongAnswer : correctAnswer;
-            const selectedFruit = fruits[Math.floor(Math.random() * fruits.length)];
-            document.getElementById('left-icon').innerText = selectedFruit;
-            document.getElementById('right-icon').innerText = selectedFruit;
+            const fruit = fruits[Math.floor(Math.random() * fruits.length)];
+            document.getElementById('left-icon').innerText = fruit;
+            document.getElementById('right-icon').innerText = fruit;
             window.correctSide = isLeftCorrect ? 'left' : 'right';
         }
 
         function checkAnswer(side) {
-            const feedbackDiv = document.getElementById('feedback');
-            const selectedElement = document.getElementById(side + '-option');
             if (side === window.correctSide) {
-                feedbackDiv.innerHTML = '✅';
-                selectedElement.classList.add('correct');
-                stats[currentLevel].correct++; consecutiveCorrect++;
-                if (currentLevel !== 'karışık') questionStats[currentLevel][window.currentNum2]++;
-                updateStatsDisplay(); playCorrectSound();
-                if (consecutiveCorrect === 10) { showBravoNotification(); consecutiveCorrect = 0; }
-                if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
-                setTimeout(generateQuestion, 1000);
+                document.getElementById('feedback').innerText = '✅';
+                stats[currentLevel].correct++;
+                playCorrectSound();
+                updateStatsDisplay();
+                setTimeout(generateQuestion, 800);
             } else {
-                feedbackDiv.innerHTML = '❌';
-                selectedElement.classList.add('wrong');
-                stats[currentLevel].wrong++; consecutiveCorrect = 0;
-                if (currentLevel !== 'karışık') questionStats[currentLevel][window.currentNum2] = 0;
-                updateStatsDisplay(); playWrongSound();
-                if (navigator.vibrate) navigator.vibrate(300);
-                setTimeout(() => { selectedElement.classList.remove('wrong'); feedbackDiv.innerHTML = ''; }, 1000);
+                document.getElementById('feedback').innerText = '❌';
+                stats[currentLevel].wrong++;
+                playWrongSound();
+                updateStatsDisplay();
             }
         }
         initLevelButtons();
-        generateQuestion();
+        changeLevel(2);
     </script>
 </body>
 </html>
