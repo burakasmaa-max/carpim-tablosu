@@ -34,11 +34,48 @@
             color: white;
         }
 
-        /* --- UZAY VE ROKET ALANI --- */
+        /* --- TAM EKRAN FIRLATMA ALANI (GİZLİ KATMAN) --- */
+        #launch-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #000000 0%, #2b1055 100%);
+            z-index: 9999; /* Her şeyin üstünde */
+            display: none; /* Başlangıçta gizli */
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end; /* Roket alttan başlar */
+            overflow: hidden;
+        }
+
+        #big-rocket {
+            font-size: 150px;
+            filter: drop-shadow(0 0 20px orange);
+            position: absolute;
+            bottom: -200px; /* Ekranın altında başla */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Fırlatma Animasyonu */
+        .fly-up {
+            animation: flyUpAnimation 3s ease-in-out forwards;
+        }
+
+        @keyframes flyUpAnimation {
+            0% { bottom: 10px; transform: translateX(-50%) scale(1); }
+            20% { bottom: 10px; transform: translateX(-50%) scale(1) rotate(-2deg); } /* Titreme */
+            30% { bottom: 10px; transform: translateX(-50%) scale(1) rotate(2deg); }
+            100% { bottom: 120%; transform: translateX(-50%) scale(0.8); } /* Ekran dışına çık */
+        }
+
+        /* --- OYUN İÇİ KÜÇÜK PANEL --- */
         #space-container {
             width: 100%;
             max-width: 500px;
-            height: 180px;
+            height: 140px; /* Yüksekliği biraz azalttık */
             position: relative;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 20px;
@@ -48,9 +85,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: center;
         }
 
+        /* Hareket eden yıldızlar */
         .star {
             position: absolute;
             background: white;
@@ -60,42 +98,16 @@
         }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-        #rocket {
-            font-size: 80px;
+        #small-rocket {
+            font-size: 60px;
             filter: drop-shadow(0 0 10px orange);
-            z-index: 10;
             transition: transform 0.3s;
-            position: relative;
-            bottom: 10px;
-        }
-
-        .shaking { animation: shake 0.5s infinite; }
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-
-        .launching { animation: launch 1.5s ease-in forwards; }
-        @keyframes launch {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-600px) scale(0.5); }
+            margin-bottom: 5px;
         }
 
         #fuel-wrapper {
             width: 80%;
-            position: absolute;
-            bottom: 10px;
-            left: 10%;
-            z-index: 20;
+            margin-top: 10px;
         }
         
         #fuel-label {
@@ -131,9 +143,16 @@
         }
 
         /* --- OYUN ALANI --- */
-        #game-container {
+        #game-wrapper {
             width: 100%;
             max-width: 500px;
+            display: flex; /* Animasyonda gizlemek için flex yapıda tutuyoruz */
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #game-container {
+            width: 100%;
             background: rgba(255, 255, 255, 0.95);
             padding: 15px;
             border-radius: 25px;
@@ -142,13 +161,15 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            position: relative;
+            z-index: 10;
         }
 
-        /* YENİ EKLENEN SKOR TABLOSU STİLİ */
+        /* SKOR TABLOSU */
         #score-board {
             background: #f1f2f6;
             border-radius: 15px;
-            padding: 8px 15px;
+            padding: 5px 15px;
             display: inline-flex;
             justify-content: center;
             align-items: center;
@@ -159,14 +180,7 @@
             margin-bottom: 5px;
         }
 
-        .score-item {
-            font-size: 1.2rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
+        .score-item { font-size: 1.1rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .score-correct { color: #2ecc71; }
         .score-wrong { color: #ff4757; }
         .score-divider { color: #ccc; font-size: 1.2rem; }
@@ -184,11 +198,11 @@
         }
 
         #question {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: bold;
             color: #2b1055;
             background: #eef2f3;
-            padding: 10px;
+            padding: 5px;
             border-radius: 15px;
             border: 3px solid #ccc;
         }
@@ -201,7 +215,7 @@
 
         .option {
             flex: 1;
-            padding: 15px 5px;
+            padding: 10px 5px;
             border: 3px solid #ccc;
             border-radius: 15px;
             background: white;
@@ -209,13 +223,21 @@
             cursor: pointer;
             transition: transform 0.1s, background 0.2s;
         }
-        
         .option:active { transform: scale(0.95); background: #f0f0f0; }
 
-        .icon { font-size: 35px; display: block; margin-bottom: 5px; }
-        .count { font-size: 28px; font-weight: bold; color: #333; }
+        .icon { font-size: 30px; display: block; margin-bottom: 5px; }
+        .count { font-size: 24px; font-weight: bold; color: #333; }
 
-        #feedback { height: 40px; font-size: 30px; font-weight: bold; color: #2b1055; }
+        /* --- GERİ BİLDİRİM YAZISI (DÜZELTİLDİ) --- */
+        #feedback { 
+            height: 30px; 
+            font-size: 1.2rem; /* Punto küçültüldü */
+            font-weight: bold; 
+            color: #2b1055; 
+            margin-top: 5px;
+            white-space: nowrap; /* Satır kaymasını engelle */
+            overflow: visible;
+        }
 
         /* --- SEVİYE BUTONLARI --- */
         #level-selector {
@@ -224,8 +246,10 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 5px;
+            gap: 6px;
             margin-top: 15px;
+            position: relative;
+            z-index: 5;
         }
 
         .level-btn {
@@ -239,7 +263,6 @@
             color: white;
             cursor: pointer;
         }
-
         .level-btn.active {
             background: #ffeb3b;
             color: #2b1055;
@@ -248,53 +271,62 @@
         }
         
         @media (max-height: 700px) {
-            #question { font-size: 3rem; padding: 5px; }
-            #rocket { font-size: 60px; }
-            #space-container { height: 150px; }
-            #score-board { padding: 5px 10px; font-size: 1rem; }
+            #question { font-size: 2.8rem; }
+            #small-rocket { font-size: 50px; }
+            #space-container { height: 120px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="space-container">
-        <div id="stars-bg"></div>
-        <div id="planet-display">🌍</div>
-        <div id="rocket">🚀</div>
-        
-        <div id="fuel-wrapper">
-            <div id="fuel-label">YAKIT DURUMU</div>
-            <div id="fuel-tank">
-                <div id="fuel-level"></div>
-            </div>
+    <div id="launch-overlay">
+        <div id="stars-overlay"></div>
+        <div style="color:white; margin-top:50px; font-size: 1.5rem; font-weight:bold; text-align:center;">
+            HARİKA! YENİ GEZEGENE GİDİYORUZ!
         </div>
+        <div id="big-rocket">🚀</div>
     </div>
 
-    <div id="game-container">
-        <div id="score-board">
-            <span class="score-item score-correct">
-                ✔ <span id="correct-val">0</span>
-            </span>
-            <span class="score-divider">|</span>
-            <span class="score-item score-wrong">
-                ✖ <span id="wrong-val">0</span>
-            </span>
+    <div id="game-wrapper">
+        <div id="space-container">
+            <div id="stars-bg"></div>
+            <div id="planet-display">🌍</div>
+            <div id="small-rocket">🚀</div>
+            
+            <div id="fuel-wrapper">
+                <div id="fuel-label">YAKIT DURUMU</div>
+                <div id="fuel-tank">
+                    <div id="fuel-level"></div>
+                </div>
+            </div>
         </div>
 
-        <div id="level-indicator">Seviye: 2'ler</div>
-        <div id="question">? x ?</div>
-        
-        <div class="options-container">
-            <div id="left-option" class="option" onclick="checkAnswer('left')">
-                <span id="left-icon" class="icon">🍎</span>
-                <span id="left-count" class="count">?</span>
+        <div id="game-container">
+            <div id="score-board">
+                <span class="score-item score-correct">
+                    ✔ <span id="correct-val">0</span>
+                </span>
+                <span class="score-divider">|</span>
+                <span class="score-item score-wrong">
+                    ✖ <span id="wrong-val">0</span>
+                </span>
             </div>
-            <div id="right-option" class="option" onclick="checkAnswer('right')">
-                <span id="right-icon" class="icon">🍎</span>
-                <span id="right-count" class="count">?</span>
+
+            <div id="level-indicator">Seviye: 2'ler</div>
+            <div id="question">? x ?</div>
+            
+            <div class="options-container">
+                <div id="left-option" class="option" onclick="checkAnswer('left')">
+                    <span id="left-icon" class="icon">🍎</span>
+                    <span id="left-count" class="count">?</span>
+                </div>
+                <div id="right-option" class="option" onclick="checkAnswer('right')">
+                    <span id="right-icon" class="icon">🍎</span>
+                    <span id="right-count" class="count">?</span>
+                </div>
             </div>
+            <div id="feedback"></div>
         </div>
-        <div id="feedback"></div>
     </div>
 
     <div id="level-selector"></div>
@@ -316,29 +348,33 @@
             const osc = audioContext.createOscillator();
             const gain = audioContext.createGain();
             osc.connect(gain); gain.connect(audioContext.destination);
-            osc.frequency.setValueAtTime(100, audioContext.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(10, audioContext.currentTime + 1.5);
+            // Gürültülü bir kalkış sesi simülasyonu
+            osc.frequency.setValueAtTime(80, audioContext.currentTime);
+            osc.frequency.linearRampToValueAtTime(300, audioContext.currentTime + 3);
             osc.type = 'sawtooth';
-            gain.gain.setValueAtTime(0.2, audioContext.currentTime);
-            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 1.5);
-            osc.start(audioContext.currentTime); osc.stop(audioContext.currentTime + 1.5);
+            
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 3);
+            
+            osc.start(audioContext.currentTime); osc.stop(audioContext.currentTime + 3);
         }
 
         let currentLevel = 2;
         let correctAnswer;
-        let fuel = 0;
         
-        // --- YENİ EKLENEN SKOR DEĞİŞKENLERİ ---
+        // --- SKOR VE YAKIT ---
         let totalCorrect = 0;
         let totalWrong = 0;
+        let currentFuel = 0;
+        const maxFuel = 10; // 10 doğru cevapta bir fırlatma
 
-        const maxFuel = 5; 
         const fruits = ['🍎', '🍌', '🍇', '🍓', '🍒', '🍍', '🍊', '🍉', '🍐', '🥭'];
-        const planets = ['🌑', '🪐', '🌍', '🌞', '🌝', '⭐', '☄️', '🛸', '🌌'];
+        const planets = ['🌑', '🪐', '🌍', '🌞', '🌝', '⭐', '☄️', '🛸', '🌌', '🪐'];
         
-        function createStars() {
-            const bg = document.getElementById('stars-bg');
-            for(let i=0; i<30; i++) {
+        // Yıldızları oluştur (Hem küçük panele hem tam ekrana)
+        function createStars(elementId) {
+            const bg = document.getElementById(elementId);
+            for(let i=0; i<40; i++) {
                 let s = document.createElement('div');
                 s.className = 'star';
                 s.style.left = Math.random() * 100 + '%';
@@ -349,47 +385,55 @@
                 bg.appendChild(s);
             }
         }
-        createStars();
+        createStars('stars-bg');
+        createStars('launch-overlay');
 
         function updateFuel() {
-            fuel++;
-            let percent = (fuel / maxFuel) * 100;
+            currentFuel++;
+            let percent = (currentFuel / maxFuel) * 100;
             document.getElementById('fuel-level').style.width = percent + '%';
             
-            if(fuel > 0) {
-               document.getElementById('rocket').classList.add('shaking');
-               setTimeout(() => document.getElementById('rocket').classList.remove('shaking'), 300);
-            }
-
-            if (fuel >= maxFuel) {
-                launchRocket();
+            if (currentFuel >= maxFuel) {
+                startFullScreenLaunch();
             }
         }
 
-        function launchRocket() {
-            const rocket = document.getElementById('rocket');
-            const feedback = document.getElementById('feedback');
+        function startFullScreenLaunch() {
+            // 1. Ekranları değiştir
+            document.getElementById('game-wrapper').style.display = 'none';
+            document.getElementById('level-selector').style.display = 'none';
+            document.getElementById('launch-overlay').style.display = 'flex';
             
-            rocket.classList.add('shaking'); 
-            feedback.innerText = "🚀 FIRLATILIYOR! 🚀";
+            // 2. Roket Animasyonunu Başlat
+            const bigRocket = document.getElementById('big-rocket');
+            bigRocket.classList.remove('fly-up');
+            void bigRocket.offsetWidth; // Reset animation trigger
+            bigRocket.classList.add('fly-up');
+            
             playLaunchSound();
 
+            // 3. Animasyon bitince (3 saniye sonra)
             setTimeout(() => {
-                rocket.classList.remove('shaking');
-                rocket.classList.add('launching'); 
+                // Görünümü geri al
+                document.getElementById('launch-overlay').style.display = 'none';
+                document.getElementById('game-wrapper').style.display = 'flex';
+                document.getElementById('level-selector').style.display = 'flex';
                 
-                setTimeout(() => {
-                    rocket.classList.remove('launching');
-                    fuel = 0;
-                    document.getElementById('fuel-level').style.width = '0%';
-                    
-                    const randomPlanet = planets[Math.floor(Math.random() * planets.length)];
-                    document.getElementById('planet-display').innerText = randomPlanet;
-                    feedback.innerText = "Yeni Gezegene İndik!";
-                    
-                    setTimeout(generateQuestion, 1000);
-                }, 1500);
-            }, 500);
+                // Değerleri Sıfırla
+                currentFuel = 0;
+                document.getElementById('fuel-level').style.width = '0%';
+                
+                // Yeni Gezegen
+                const randomPlanet = planets[Math.floor(Math.random() * planets.length)];
+                document.getElementById('planet-display').innerText = randomPlanet;
+                
+                // Mesaj
+                document.getElementById('feedback').innerText = "Yeni Gezegene İndik! 🚩";
+                document.getElementById('feedback').style.color = "#2ecc71";
+                
+                setTimeout(generateQuestion, 1500);
+
+            }, 3000);
         }
 
         const levels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'karışık'];
@@ -423,7 +467,7 @@
         }
 
         function generateQuestion() {
-            if(fuel >= maxFuel) return; 
+            if(currentFuel >= maxFuel) return; 
 
             document.getElementById('feedback').innerText = '';
             let num1, num2;
@@ -452,25 +496,28 @@
         }
 
         function checkAnswer(side) {
-            if(fuel >= maxFuel) return; 
+            if(currentFuel >= maxFuel) return; 
 
             if (side === window.correctSide) {
-                document.getElementById('feedback').innerText = '✅ Harika!';
+                document.getElementById('feedback').innerText = 'Harika! ✅';
+                document.getElementById('feedback').style.color = "#2b1055";
                 playTone(600, 'sine', 0.1); 
-                updateFuel();
                 
-                // --- SKOR GÜNCELLEME ---
+                // Skor güncelle
                 totalCorrect++;
                 document.getElementById('correct-val').innerText = totalCorrect;
                 
-                if (fuel < maxFuel) {
+                // Yakıt güncelle (Bu fonksiyon içinde 10 olunca fırlatma başlar)
+                updateFuel();
+                
+                if (currentFuel < maxFuel) {
                     setTimeout(generateQuestion, 800);
                 }
             } else {
-                document.getElementById('feedback').innerText = '❌ Tekrar Dene';
+                document.getElementById('feedback').innerText = 'Tekrar Dene ❌';
+                document.getElementById('feedback').style.color = "#ff4757";
                 playTone(150, 'sawtooth', 0.3);
                 
-                // --- SKOR GÜNCELLEME ---
                 totalWrong++;
                 document.getElementById('wrong-val').innerText = totalWrong;
             }
