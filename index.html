@@ -193,6 +193,20 @@
         const fruits = ['🍎', '🍌', '🍇', '🍓', '🍒', '🍍', '🍊', '🍉', '🥝', '🍐', '🍑', '🥭', '🍋', '🥥'];
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
+        // Doğru eki getiren yardımcı fonksiyon
+        function getLevelTitle(level) {
+            if (level === 'karışık') return 'Karışık';
+            // 6, 9 ve 10 sayıları 'lar' alır (Altılar, Dokuzlar, Onlar)
+            // Eğer 8 için de 'lar' istiyorsanız [6, 8, 9, 10] yapabilirsiniz.
+            const larSuffixNumbers = [6, 9, 10]; 
+            
+            if (larSuffixNumbers.includes(level)) {
+                return level + "'lar";
+            } else {
+                return level + "'ler";
+            }
+        }
+
         function playCorrectSound() {
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -246,14 +260,21 @@
             levels.forEach(level => document.getElementById(`stat-${level}`).classList.remove('active'));
             const currentBox = document.getElementById(`stat-${currentLevel}`);
             currentBox.classList.add('active');
-            currentBox.innerHTML = `<b>${currentLevel === 'karışık' ? 'Karışık' : currentLevel + 'ler'}</b> -> ✅: ${stats[currentLevel].correct} | ❌: ${stats[currentLevel].wrong}`;
+            
+            // Düzeltme burada uygulandı
+            const title = getLevelTitle(currentLevel);
+            currentBox.innerHTML = `<b>${title}</b> -> ✅: ${stats[currentLevel].correct} | ❌: ${stats[currentLevel].wrong}`;
         }
 
         function changeLevel(level) {
             currentLevel = level;
             document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${level}`).classList.add('active');
-            document.getElementById('level-indicator').innerText = `Seviye: ${level === 'karışık' ? 'Karışık' : level + "'ler"}`;
+            
+            // Düzeltme burada uygulandı
+            const title = getLevelTitle(level);
+            document.getElementById('level-indicator').innerText = `Seviye: ${title}`;
+            
             updateStatsDisplay(); generateQuestion();
         }
 
