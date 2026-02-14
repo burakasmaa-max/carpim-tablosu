@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Çarpma Oyunu</title>
+    <title>Roket Matematik</title>
     
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
@@ -11,81 +11,186 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Çarpma Oyunu">
+    <meta name="apple-mobile-web-app-title" content="Roket Matematik">
 
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at center, #2b1055 0%, #7597de 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Dikeyde tam ortalar */
+            justify-content: center;
             min-height: 100vh;
             padding: 10px;
-            touch-action: manipulation;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* --- UZAY VE ROKET ALANI --- */
+        #space-container {
+            width: 100%;
+            max-width: 500px;
+            height: 180px;
+            position: relative;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: twinkle 2s infinite;
+        }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        #rocket {
+            font-size: 80px;
+            filter: drop-shadow(0 0 10px orange);
+            z-index: 10;
+            transition: transform 0.3s;
+            position: relative;
+            bottom: 10px;
+        }
+
+        .shaking { animation: shake 0.5s infinite; }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .launching { animation: launch 1.5s ease-in forwards; }
+        @keyframes launch {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-600px) scale(0.5); }
+        }
+
+        #fuel-wrapper {
+            width: 80%;
+            position: absolute;
+            bottom: 10px;
+            left: 10%;
+            z-index: 20;
+        }
+        
+        #fuel-label {
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 2px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px black;
+        }
+
+        #fuel-tank {
+            width: 100%;
+            height: 12px;
+            background: #333;
+            border-radius: 10px;
+            border: 2px solid #fff;
             overflow: hidden;
         }
 
-        #header, #stats-container, #game-container, #level-selector {
+        #fuel-level {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff4e50, #f9d423);
+            transition: width 0.4s ease-out;
+        }
+
+        #planet-display {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 40px;
+            opacity: 0.8;
+        }
+
+        /* --- OYUN ALANI --- */
+        #game-container {
             width: 100%;
             max-width: 500px;
-        }
-
-        #header {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            padding: 10px;
-            border-radius: 20px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-
-        #header h1 {
-            color: white;
-            font-size: 1.6rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        #game-container {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            padding: 20px 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
             border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             text-align: center;
-            border: 5px solid #fff;
-            position: relative;
-            min-height: 55vh; /* Ekranın %55'ini kaplar */
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
+            gap: 10px;
         }
 
-        #level-indicator {
-            font-size: 1.2rem;
-            color: #fff;
-            font-weight: bold;
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            padding: 8px;
+        /* YENİ EKLENEN SKOR TABLOSU STİLİ */
+        #score-board {
+            background: #f1f2f6;
             border-radius: 15px;
+            padding: 8px 15px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            align-self: center;
+            border: 2px solid #dfe4ea;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
             margin-bottom: 5px;
         }
 
-        #question {
-            font-size: 4.5rem;
+        .score-item {
+            font-size: 1.2rem;
             font-weight: bold;
-            color: #2d3436;
-            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-            padding: 15px;
-            border-radius: 20px;
-            border: 4px solid #fff;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .score-correct { color: #2ecc71; }
+        .score-wrong { color: #ff4757; }
+        .score-divider { color: #ccc; font-size: 1.2rem; }
+
+        #level-indicator {
+            font-size: 1rem;
+            color: #444;
+            font-weight: bold;
+            background: #ffeb3b;
+            padding: 5px 15px;
+            border-radius: 15px;
+            display: inline-block;
+            align-self: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #question {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #2b1055;
+            background: #eef2f3;
+            padding: 10px;
+            border-radius: 15px;
+            border: 3px solid #ccc;
         }
 
         .options-container {
@@ -97,80 +202,88 @@
         .option {
             flex: 1;
             padding: 15px 5px;
-            border: 4px solid #fff;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            border: 3px solid #ccc;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
         }
+        
+        .option:active { transform: scale(0.95); background: #f0f0f0; }
 
-        .icon { 
-            font-size: 50px; 
-            display: block; 
-            margin-bottom: 5px;
-        }
+        .icon { font-size: 35px; display: block; margin-bottom: 5px; }
+        .count { font-size: 28px; font-weight: bold; color: #333; }
 
-        .count { font-size: 30px; font-weight: bold; color: #2d3436; }
+        #feedback { height: 40px; font-size: 30px; font-weight: bold; color: #2b1055; }
 
+        /* --- SEVİYE BUTONLARI --- */
         #level-selector {
+            width: 100%;
+            max-width: 500px;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 6px;
-            padding: 10px 0;
+            gap: 5px;
+            margin-top: 15px;
         }
 
         .level-btn {
-            padding: 10px;
-            font-size: 1rem;
+            padding: 8px 0;
+            width: 40px;
+            font-size: 0.9rem;
             font-weight: bold;
-            border: 2px solid #fff;
-            border-radius: 12px;
-            background: #fff;
-            color: #764ba2;
-            min-width: 45px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
         }
 
         .level-btn.active {
-            background: #f5576c;
-            color: white;
+            background: #ffeb3b;
+            color: #2b1055;
             transform: scale(1.1);
+            box-shadow: 0 0 10px #ffeb3b;
         }
-
-        #feedback { height: 50px; font-size: 45px; }
-
-        .stat-box {
-            background: #fff;
-            padding: 5px 15px;
-            border-radius: 10px;
-            font-size: 14px;
-            display: none;
-            margin-bottom: 8px;
-            border: 2px solid #f093fb;
-        }
-        .stat-box.active { display: block; }
-        .stars { position: absolute; top: -15px; right: -15px; font-size: 35px; }
-
-        /* Küçük ekran optimizasyonu */
-        @media (max-height: 650px) {
-            #question { font-size: 3.5rem; }
-            .icon { font-size: 40px; }
-            #header h1 { font-size: 1.3rem; }
+        
+        @media (max-height: 700px) {
+            #question { font-size: 3rem; padding: 5px; }
+            #rocket { font-size: 60px; }
+            #space-container { height: 150px; }
+            #score-board { padding: 5px 10px; font-size: 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <div id="header">
-        <h1>🎮 Çarpma Oyunu 🎮</h1>
+    <div id="space-container">
+        <div id="stars-bg"></div>
+        <div id="planet-display">🌍</div>
+        <div id="rocket">🚀</div>
+        
+        <div id="fuel-wrapper">
+            <div id="fuel-label">YAKIT DURUMU</div>
+            <div id="fuel-tank">
+                <div id="fuel-level"></div>
+            </div>
+        </div>
     </div>
 
-    <div id="stats-container"></div>
-
     <div id="game-container">
-        <span class="stars">⭐</span>
-        <div id="level-indicator">Yükleniyor...</div>
+        <div id="score-board">
+            <span class="score-item score-correct">
+                ✔ <span id="correct-val">0</span>
+            </span>
+            <span class="score-divider">|</span>
+            <span class="score-item score-wrong">
+                ✖ <span id="wrong-val">0</span>
+            </span>
+        </div>
+
+        <div id="level-indicator">Seviye: 2'ler</div>
         <div id="question">? x ?</div>
+        
         <div class="options-container">
             <div id="left-option" class="option" onclick="checkAnswer('left')">
                 <span id="left-icon" class="icon">🍎</span>
@@ -187,60 +300,108 @@
     <div id="level-selector"></div>
 
     <script>
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playTone(freq, type, duration) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain); gain.connect(audioContext.destination);
+            osc.frequency.value = freq; osc.type = type;
+            gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            osc.start(audioContext.currentTime); osc.stop(audioContext.currentTime + duration);
+        }
+
+        function playLaunchSound() {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain); gain.connect(audioContext.destination);
+            osc.frequency.setValueAtTime(100, audioContext.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(10, audioContext.currentTime + 1.5);
+            osc.type = 'sawtooth';
+            gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 1.5);
+            osc.start(audioContext.currentTime); osc.stop(audioContext.currentTime + 1.5);
+        }
+
         let currentLevel = 2;
         let correctAnswer;
-        let consecutiveCorrect = 0;
-        const fruits = ['🍎', '🍌', '🍇', '🍓', '🍒', '🍍', '🍊', '🍉', '🥝', '🍐', '🍑', '🥭', '🍋', '🥥'];
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let fuel = 0;
+        
+        // --- YENİ EKLENEN SKOR DEĞİŞKENLERİ ---
+        let totalCorrect = 0;
+        let totalWrong = 0;
 
-        // Doğru eki getiren yardımcı fonksiyon
+        const maxFuel = 5; 
+        const fruits = ['🍎', '🍌', '🍇', '🍓', '🍒', '🍍', '🍊', '🍉', '🍐', '🥭'];
+        const planets = ['🌑', '🪐', '🌍', '🌞', '🌝', '⭐', '☄️', '🛸', '🌌'];
+        
+        function createStars() {
+            const bg = document.getElementById('stars-bg');
+            for(let i=0; i<30; i++) {
+                let s = document.createElement('div');
+                s.className = 'star';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.width = Math.random() * 3 + 'px';
+                s.style.height = s.style.width;
+                s.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                bg.appendChild(s);
+            }
+        }
+        createStars();
+
+        function updateFuel() {
+            fuel++;
+            let percent = (fuel / maxFuel) * 100;
+            document.getElementById('fuel-level').style.width = percent + '%';
+            
+            if(fuel > 0) {
+               document.getElementById('rocket').classList.add('shaking');
+               setTimeout(() => document.getElementById('rocket').classList.remove('shaking'), 300);
+            }
+
+            if (fuel >= maxFuel) {
+                launchRocket();
+            }
+        }
+
+        function launchRocket() {
+            const rocket = document.getElementById('rocket');
+            const feedback = document.getElementById('feedback');
+            
+            rocket.classList.add('shaking'); 
+            feedback.innerText = "🚀 FIRLATILIYOR! 🚀";
+            playLaunchSound();
+
+            setTimeout(() => {
+                rocket.classList.remove('shaking');
+                rocket.classList.add('launching'); 
+                
+                setTimeout(() => {
+                    rocket.classList.remove('launching');
+                    fuel = 0;
+                    document.getElementById('fuel-level').style.width = '0%';
+                    
+                    const randomPlanet = planets[Math.floor(Math.random() * planets.length)];
+                    document.getElementById('planet-display').innerText = randomPlanet;
+                    feedback.innerText = "Yeni Gezegene İndik!";
+                    
+                    setTimeout(generateQuestion, 1000);
+                }, 1500);
+            }, 500);
+        }
+
+        const levels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'karışık'];
+
         function getLevelTitle(level) {
             if (level === 'karışık') return 'Karışık';
-            // 6, 9 ve 10 sayıları 'lar' alır (Altılar, Dokuzlar, Onlar)
-            // Eğer 8 için de 'lar' istiyorsanız [6, 8, 9, 10] yapabilirsiniz.
             const larSuffixNumbers = [6, 9, 10]; 
-            
-            if (larSuffixNumbers.includes(level)) {
-                return level + "'lar";
-            } else {
-                return level + "'ler";
-            }
+            return larSuffixNumbers.includes(level) ? level + "'lar" : level + "'ler";
         }
-
-        function playCorrectSound() {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.connect(gainNode); gainNode.connect(audioContext.destination);
-            oscillator.frequency.value = 523.25; oscillator.type = 'sine';
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            oscillator.start(audioContext.currentTime); oscillator.stop(audioContext.currentTime + 0.3);
-        }
-
-        function playWrongSound() {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.connect(gainNode); gainNode.connect(audioContext.destination);
-            oscillator.frequency.value = 200; oscillator.type = 'sawtooth';
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-            oscillator.start(audioContext.currentTime); oscillator.stop(audioContext.currentTime + 0.5);
-        }
-
-        const stats = {};
-        const levels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'karışık'];
-        const questionStats = {};
-        levels.forEach(level => {
-            stats[level] = { correct: 0, wrong: 0 };
-            if (level !== 'karışık') {
-                questionStats[level] = {};
-                for (let i = 1; i <= 10; i++) { questionStats[level][i] = 0; }
-            }
-        });
 
         function initLevelButtons() {
             const selector = document.getElementById('level-selector');
-            const statsContainer = document.getElementById('stats-container');
             levels.forEach(level => {
                 const btn = document.createElement('button');
                 btn.className = `level-btn ${level === currentLevel ? 'active' : ''}`;
@@ -248,22 +409,7 @@
                 btn.innerText = level === 'karışık' ? '🎲' : level;
                 btn.onclick = () => changeLevel(level);
                 selector.appendChild(btn);
-
-                const sBox = document.createElement('div');
-                sBox.className = 'stat-box'; sBox.id = `stat-${level}`;
-                sBox.innerHTML = `✅: 0 | ❌: 0`;
-                statsContainer.appendChild(sBox);
             });
-        }
-
-        function updateStatsDisplay() {
-            levels.forEach(level => document.getElementById(`stat-${level}`).classList.remove('active'));
-            const currentBox = document.getElementById(`stat-${currentLevel}`);
-            currentBox.classList.add('active');
-            
-            // Düzeltme burada uygulandı
-            const title = getLevelTitle(currentLevel);
-            currentBox.innerHTML = `<b>${title}</b> -> ✅: ${stats[currentLevel].correct} | ❌: ${stats[currentLevel].wrong}`;
         }
 
         function changeLevel(level) {
@@ -271,15 +417,15 @@
             document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${level}`).classList.add('active');
             
-            // Düzeltme burada uygulandı
             const title = getLevelTitle(level);
             document.getElementById('level-indicator').innerText = `Seviye: ${title}`;
-            
-            updateStatsDisplay(); generateQuestion();
+            generateQuestion();
         }
 
         function generateQuestion() {
-            document.getElementById('feedback').innerHTML = '';
+            if(fuel >= maxFuel) return; 
+
+            document.getElementById('feedback').innerText = '';
             let num1, num2;
             if (currentLevel === 'karışık') {
                 num1 = Math.floor(Math.random() * 10) + 1;
@@ -291,31 +437,45 @@
             correctAnswer = num1 * num2;
             let wrongAnswer = correctAnswer + (Math.random() > 0.5 ? num1 : -num1);
             if (wrongAnswer <= 0) wrongAnswer = correctAnswer + num1;
+            if (wrongAnswer === correctAnswer) wrongAnswer = correctAnswer + 1;
 
             document.getElementById('question').innerText = `${num1} × ${num2}`;
             const isLeftCorrect = Math.random() > 0.5;
             document.getElementById('left-count').innerText = isLeftCorrect ? correctAnswer : wrongAnswer;
             document.getElementById('right-count').innerText = isLeftCorrect ? wrongAnswer : correctAnswer;
+            
             const fruit = fruits[Math.floor(Math.random() * fruits.length)];
             document.getElementById('left-icon').innerText = fruit;
             document.getElementById('right-icon').innerText = fruit;
+            
             window.correctSide = isLeftCorrect ? 'left' : 'right';
         }
 
         function checkAnswer(side) {
+            if(fuel >= maxFuel) return; 
+
             if (side === window.correctSide) {
-                document.getElementById('feedback').innerText = '✅';
-                stats[currentLevel].correct++;
-                playCorrectSound();
-                updateStatsDisplay();
-                setTimeout(generateQuestion, 800);
+                document.getElementById('feedback').innerText = '✅ Harika!';
+                playTone(600, 'sine', 0.1); 
+                updateFuel();
+                
+                // --- SKOR GÜNCELLEME ---
+                totalCorrect++;
+                document.getElementById('correct-val').innerText = totalCorrect;
+                
+                if (fuel < maxFuel) {
+                    setTimeout(generateQuestion, 800);
+                }
             } else {
-                document.getElementById('feedback').innerText = '❌';
-                stats[currentLevel].wrong++;
-                playWrongSound();
-                updateStatsDisplay();
+                document.getElementById('feedback').innerText = '❌ Tekrar Dene';
+                playTone(150, 'sawtooth', 0.3);
+                
+                // --- SKOR GÜNCELLEME ---
+                totalWrong++;
+                document.getElementById('wrong-val').innerText = totalWrong;
             }
         }
+
         initLevelButtons();
         changeLevel(2);
     </script>
